@@ -1,0 +1,63 @@
+-----------------------------
+Tracking Files Lifecycle * Create a file (app.txt) * Check repository status * Stage file using git add * Commit changes using git commit * Modify file and view differences using git diff * Commit updated changes Create dev branch, Switch branches, Make changes in dev, Switch back to main, Compare branches. give me step by step
+-----------------------------
+git init
+touch app.
+echo Hello > app.txt
+git status
+git add app.txt
+git status
+git commit -m "Added app.txt file"
+echo "This is new content" >> app.txt
+git diff
+git add app.txt
+git commit -m "Updated app.txt content"
+git branch dev
+//git checkout dev
+git switch dev
+echo "This is dev branch change" >> app.txt
+git add app.txt
+git commit -m "Changes in dev branch"
+git checkout main
+git switch main
+git diff main dev
+git branch
+
+-------------------------------------------------
+Branching and Isolation
+* Create a dev branch using git branch
+* Switch branches using git checkout
+* Make changes in dev branch
+* Switch back to main branch
+* Compare branchesOutcome: Student understands branch isolation and parallel development.
+-------------------------------------------------------
+git branch dev
+git checkout dev
+git switch dev
+git branch
+echo "This change is in dev branch" >> app.txt
+git add app.txt
+git commit -m "Updated file in dev branch"
+git checkout main
+cat app.txt
+git diff main dev
+
+------------------------------------------
+Merging and Conflict Handling
+* Merge dev branch into main using git merge
+* Perform fast-forward merge
+* Create conflicting changes in two branches
+* Resolve merge conflicts manually
+* Commit resolved changes
+-------------------------------------------
+
+-----------------------------------------------
+Working with Remote Repositories
+* Understand local vs remote repositories
+* Configure remote using git remote add
+* Clone repository using git clone
+* Fetch updates using git fetch
+* Pull changes using git pull
+* Push changes using git push
+Outcome: Student can synchronize local and remote repositories.
+----------------------------------------------------

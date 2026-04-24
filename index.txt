@@ -1,0 +1,335 @@
+#----------s3 bucket---------
+provider "aws" {
+  region = "ap-south-1"
+}
+
+resource "aws_s3_bucket" "my_bucket" {
+  bucket = "my-bucket-jignasa-2"   
+
+  tags = {
+    Name = "MyBucket"
+  }
+}
+
+
+#----------------s3 bucket versioning changes----
+provider "aws" {
+  region = "ap-south-1"
+}
+resource "aws_s3_bucket" "my_bucket" {
+  bucket = "my-bucket-jignasa-2"
+
+  tags = {
+    Name = "MyBucket"
+  }
+}
+
+terraform { 
+backend "s3" { 
+bucket  = "my-bucket-jignasa-2" 
+key  = "terraform/state.tfstate" 
+region  = "ap-south-1"
+  }
+
+#----------terraform provising virtual machine-----------
+
+provider "aws" {
+  region = "ap-south-1"
+}
+
+resource "aws_instance" "my_ec2" {
+  ami           = "ami-0e12ffc2dd465f6e4"
+  instance_type = "t3.micro"
+  key_name      = "webserver-key"
+
+  tags = {
+    Name = "Terraform-EC2"
+  }
+}
+terraform { 
+backend "s3" { 
+bucket  = "my-bucket-jignasa-2" 
+key  = "terraform/state.tfstate" 
+region  = "ap-south-1"
+  }
+}
+
+#---------------install provisiong web server-------------
+
+provider "aws" {
+  region = "ap-south-1"
+}
+
+resource "aws_security_group" "web_sg" {
+  name = "web-sg"
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+terraform { 
+backend "s3" { 
+bucket  = "my-bucket-jignasa-2" 
+key  = "terraform/state.tfstate" 
+region  = "ap-south-1"
+  }
+}
+
+resource "aws_instance" "web_server" {
+  ami           = "ami-0e12ffc2dd465f6e4"
+  instance_type = "t3.micro"
+
+  vpc_security_group_ids = [aws_security_group.web_sg.id]
+
+  user_data = <<-EOF
+#!/bin/bash
+yum update -y
+yum install -y httpd
+systemctl start httpd
+systemctl enable httpd
+echo "<h1>Welcome to Terraform Web Server</h1>" > /var/www/html/index.html
+EOF
+
+  tags = {
+    Name = "Terraform-WebServer"
+  }
+}
+
+
+#-------------------database---------------------
+
+provider "aws" { 
+region = "ap-south-1" 
+} 
+
+resource "aws_security_group" "db_sg" { 
+name = "db-sg" 
+ingress { 
+from_port   = 3306 
+to_port     = 3306 
+protocol    = "tcp" 
+
+} 
+egress { 
+from_port   = 0 
+to_port     = 0 
+protocol    = "-1" 
+
+} 
+} 
+
+resource "aws_db_instance" "mydb" { 
+identifier      = "mydb-instance" 
+engine            = "mysql" 
+instance_class    = "db.t3.micro" 
+allocated_storage = 20 
+username = "admin" 
+password = "admin12345" 
+publicly_accessible = true 
+skip_final_snapshot = true 
+vpc_security_group_ids = [aws_security_group.db_sg.id] 
+}
+
+terraform { 
+backend "s3" { 
+bucket  = "my-bucket-jignasa-2" 
+key  = "terraform/state.tfstate" 
+region  = "ap-south-1"
+  }
+}
+
+#--------------------web application----------------
+
+provider "aws" {
+  region = "ap-south-1"
+}
+resource "aws_security_group" "web_sg" { 
+name = "web-sg" 
+ingress { 
+from_port   = 22 
+to_port     = 22 
+protocol    = "tcp" 
+cidr_blocks = ["0.0.0.0/0"] 
+} 
+ingress { 
+from_port   = 80 
+to_port     = 80 
+protocol    = "tcp" 
+cidr_blocks = ["0.0.0.0/0"] 
+} 
+} 
+
+resource "aws_security_group" "db_sg" {
+  name = "db-sg"
+
+  ingress {
+    from_port       = 3306
+    to_port         = 3306
+    protocol        = "tcp"
+    security_groups = [aws_security_group.web_sg.id]
+  }
+} 
+terraform { 
+backend "s3" { 
+bucket  = "my-bucket-jignasa-2" 
+key  = "terraform/state.tfstate" 
+region  = "ap-south-1"
+  }
+}
+
+resource "aws_db_instance" "db" { 
+identifier    = "webapp-db" 
+engine        = "mysql" 
+instance_class  = "db.t3.micro" 
+allocated_storage = 20 
+username = "admin" 
+password = "admin12345" 
+skip_final_snapshot = true 
+vpc_security_group_ids = [aws_security_group.db_sg.id] 
+} 
+
+resource "aws_instance" "web" {
+  ami           = "ami-0e12ffc2dd465f6e4"
+  instance_type = "t3.micro"
+
+  vpc_security_group_ids = [aws_security_group.web_sg.id]
+
+  depends_on = [aws_db_instance.db]
+
+  user_data = <<-EOF
+#!/bin/bash
+yum update -y
+yum install -y httpd php mysql
+systemctl start httpd
+systemctl enable httpd
+
+cat <<EOPHP > /var/www/html/index.php
+<?php
+\$conn = mysqli_connect("${aws_db_instance.db.endpoint}", "admin", "admin12345");
+
+if(\$conn){
+    echo "Connected to Database";
+} else {
+    echo "Connection Failed";
+}
+?>
+EOPHP
+EOF
+
+tags = { 
+Name = "WebServer" 
+} 
+}
+
+#-------------------managing infrastructure-------------------
+
+provider "aws" {
+  region = "ap-south-1"
+}
+resource "aws_instance" "example" { 
+ami        = "ami-0e12ffc2dd465f6e4" 
+instance_type = "t3.small"  #change t3.micro
+
+
+tags = { 
+Name = "UpdatedServer" 
+} 
+} 
+terraform { 
+backend "s3" { 
+bucket  = "my-bucket-jignasa-2" 
+key  = "terraform/state.tfstate" 
+region  = "ap-south-1"
+  }
+}
+
+#--------------------load balancer--------------------------
+    resource "aws_security_group" "alb_sg" {
+  name = "alb-sg"
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+resource "aws_instance" "web" {
+  count         = 2
+  ami           = "ami-0e12ffc2dd465f6e4"
+  instance_type = "t3.micro"
+
+  user_data = <<-EOF
+#!/bin/bash
+yum install -y httpd
+systemctl start httpd
+echo "Hello from instance $(hostname)" > /var/www/html/index.html
+EOF
+
+  tags = {
+    Name = "WebServer-${count.index}"
+  }
+}
+
+resource "aws_lb_target_group" "tg" {
+  name     = "target-group"
+  port     = 80
+  protocol = "HTTP"
+  vpc_id   = "vpc-0378a242fc68f53f8"
+}
+resource "aws_lb" "alb" {
+  name               = "my-alb"
+  internal           = false
+  load_balancer_type = "application"
+
+  security_groups = [aws_security_group.alb_sg.id]
+  subnets         = ["0da2d479bdf616755", "0da2d479bdf616755"]
+}
+resource "aws_lb_listener" "listener" {
+  load_balancer_arn = aws_lb.alb.arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.tg.arn
+  }
+}
+resource "aws_lb_target_group_attachment" "attach" {
+  count            = 2
+  target_group_arn = aws_lb_target_group.tg.arn
+  target_id        = aws_instance.web[count.index].id
+  port             = 80
+}
+terraform { 
+backend "s3" { 
+bucket  = "my-bucket-jignasa-2" 
+key  = "terraform/state.tfstate" 
+region  = "ap-south-1"
+  }
+}

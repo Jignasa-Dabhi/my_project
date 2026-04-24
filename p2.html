@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cleaning Service Booking</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e8eff1;
+            margin: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+        .package-box {
+            background: rgb(185, 213, 219);
+            padding: 20px;
+            width: 250px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h2 {
+            color: #333;
+        }
+        .price {
+            font-size: 18px;
+            color: #007bff;
+            margin: 10px 0;
+        }
+        .btn {
+            background-color: #28a745;
+            color: white;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+        .btn:hover {
+            background-color: #218838;
+        }
+        .description {
+            font-size: 14px;
+            color: #555;
+            text-align: left;
+            margin-top: 10px;
+        }
+        /* Form Popup Styling */
+        .form-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgb(220, 228, 230);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+            text-align: left;
+            width: 300px;
+        }
+        .close-btn {
+            background: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            float: right;
+            border-radius: 5px;
+        }
+        .form-label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Select a Cleaning Package</h2>
+
+<div class="container">
+    <div class="package-box">
+        <h3>1 BHK Cleaning</h3>
+        <p class="price">$100</p>
+        <div class="description">
+            <ul>
+                <li>✔ Mopping & Dusting</li>
+                <li>✔ Kitchen Cleaning</li>
+                <li>✔ Bathroom Sanitization</li>
+                <li>✔ Carpet Vacuuming</li>
+            </ul>
+        </div>
+        <button class="btn" onclick="openForm('1 BHK Cleaning', 100)">Book Now</button>
+    </div>
+    <div class="package-box">
+        <h3>2 BHK Cleaning</h3>
+        <p class="price">$150</p>
+        <div class="description">
+            <ul>
+                <li>✔ Mopping & Deep Dusting</li>
+                <li>✔ Kitchen & Cabinet Cleaning</li>
+                <li>✔ Bathroom & Toilet Scrubbing</li>
+                <li>✔ Carpet & Sofa Cleaning</li>
+            </ul>
+        </div>
+        <button class="btn" onclick="openForm('2 BHK Cleaning', 150)">Book Now</button>
+    </div>
+    <div class="package-box">
+        <h3>3 BHK Cleaning</h3>
+        <p class="price">$200</p>
+        <div class="description">
+            <ul>
+                <li>✔ Complete Home Sanitization</li>
+                <li>✔ Kitchen Degreasing</li>
+                <li>✔ Window & Door Cleaning</li>
+                <li>✔ Carpet & Sofa Deep Cleaning</li>
+            </ul>
+        </div>
+        <button class="btn" onclick="openForm('3 BHK Cleaning', 200)">Book Now</button>
+    </div>
+    <div class="package-box">
+        <h3>Villa Cleaning</h3>
+        <p class="price">$300</p>
+        <div class="description">
+            <ul>
+                <li>✔ Premium Deep Cleaning</li>
+                <li>✔ Outdoor Area & Garden Cleaning</li>
+                <li>✔ Pool Maintenance</li>
+                <li>✔ Upholstery & Carpet Shampooing</li>
+            </ul>
+        </div>
+        <button class="btn" onclick="openForm('Villa Cleaning', 300)">Book Now</button>
+    </div>
+</div>
+
+<!-- Booking Form (Popup) -->
+<div class="form-popup" id="bookingForm">
+    <button class="close-btn" onclick="closeForm()">X</button>
+    <h3 id="selectedPackage">Booking Details</h3>
+
+    <label class="form-label">Package Name:</label>
+    <p id="packageName"></p>
+
+    <label class="form-label">Total Price:</label>
+    <p id="totalPrice"></p>
+
+    <label class="form-label">Advance Payment (50%):</label>
+    <p id="advancePrice"></p>
+
+    <button class="btn" onclick="bookService()">Proceed to Payment</button>
+</div>
+
+<script>
+    function openForm(packageName, price) {
+        document.getElementById("selectedPackage").innerText = "Booking: " + packageName;
+        document.getElementById("packageName").innerText = packageName;
+        document.getElementById("totalPrice").innerText = `$${price}`;
+        document.getElementById("advancePrice").innerText = `$${price * 0.5}`;
+        document.getElementById("bookingForm").style.display = "block";
+    }
+
+    function closeForm() {
+        document.getElementById("bookingForm").style.display = "none";
+    }
+
+    function bookService() {
+        alert("Proceeding to payment... (Payment integration required)");
+        closeForm();
+    }
+</script>
+
+</body>
+</html>

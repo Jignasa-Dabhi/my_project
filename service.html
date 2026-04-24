@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Cleaning Services</title>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f8f8f8;
+            text-align: center;
+        }
+        
+        .services {
+            padding: 50px 20px;
+            background: white;
+        }
+        
+        h2 {
+            font-size: 28px;
+            color: black;
+        }
+        
+        p {
+            font-size: 16px;
+            color: #444;
+        }
+        
+        .slider {
+            position: relative;
+            max-width: 1000px;
+            margin: auto;
+            overflow: hidden;
+        }
+        
+        .slides {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+        
+        .service {
+            min-width: 100%;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background: white;
+            text-align: center;
+            border-radius: 10px;
+        }
+        
+        .service img {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 5px;
+        }
+        
+        .service h3 {
+            margin: 10px 0;
+            font-size: 18px;
+            color: #222;
+        }
+        
+        .service p {
+            font-size: 14px;
+            color: #555;
+        }
+        
+        button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            border-radius: 50%;
+        }
+        
+        .prev {
+            left: 10px;
+        }
+        
+        .next {
+            right: 10px;
+        }
+        
+        button:hover {
+            background: black;
+        }
+        
+    </style>
+</head>
+<body>
+
+    <section class="services">
+        <h2>OUR CLEANING SERVICES</h2>
+        <p>Do you wish you had more free time? We can make it happen!</p>
+
+        <div class="slider">
+            <div class="slides">
+                <div class="service">
+                    <img src="C:\Users\PC World\Pictures\clean.png" alt="House Cleaning">
+                    <h3>HOUSE CLEANING</h3>
+                    <p>Complete apartment and house cleaning services by professional cleaners.</p>
+                </div>
+
+                <div class="service">
+                    <img src="C:\Users\PC World\Pictures\clean2.png" alt="Post Renovation">
+                    <h3>POST RENOVATION</h3>
+                    <p>Get rid of the dust left behind after construction or renovation.</p>
+                </div>
+
+                <div class="service">
+                    <img src="C:\Users\PC World\Pictures\clean3.png" alt="Green Spaces Maintenance">
+                    <h3>GREEN SPACES MAINTENANCE</h3>
+                    <p>The right maintenance methods will make keeping your garden beautiful.</p>
+                </div>
+            </div>
+
+            <button class="prev" onclick="prevSlide()">&#10094;</button>
+            <button class="next" onclick="nextSlide()">&#10095;</button>
+        </div>
+    </section>
+
+    <script> 
+        let index = 0;
+
+function showSlides() {
+    const slides = document.querySelector('.slides');
+    const totalSlides = document.querySelectorAll('.service').length;
+    slides.style.transform = `translateX(-${index * 100}%)`;
+}
+
+function prevSlide() {
+    index = (index > 0) ? index - 1 : 2;
+    showSlides();
+}
+
+function nextSlide() {
+    index = (index < 2) ? index + 1 : 0;
+    showSlides();
+}
+
+setInterval(nextSlide, 5000); // Auto-slide every 5 seconds
+
+    </script>
+</body>
+</html>
